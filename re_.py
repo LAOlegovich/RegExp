@@ -4,7 +4,7 @@ import csv,os, pandas,re
 
 
 def input_data(file_name):
-  with open(os.getcwd()+"\\"+ file_name, encoding= 'utf-8') as f:
+  with open(os.path.join(os.getcwd(),file_name), encoding= 'utf-8') as f:
     rows = csv.reader(f, delimiter=",")
     return list(rows)
 
@@ -37,17 +37,34 @@ def parsing_data(contacts_list):
   return [val for val in no_conflict_list.values()]
 
 def save_data_to_file(contacts_list,file_name):
-  with open(file_name, "w", encoding= 'utf-8') as f:
+  with open(os.path.join(os.getcwd(),file_name), "w", encoding= 'utf-8') as f:
     datawriter = csv.writer(f, delimiter=',')
     datawriter.writerows(contacts_list)
 
-
+def testing_data_for_correct(enter_list):
+  header_len = len(enter_list[0])
+  numb_of_err_strs = [] 
+  for i in range(1, len(enter_list)):
+    if len(enter_list[i]) != header_len:
+       numb_of_err_strs += [i]
+  try:
+    if len(numb_of_err_strs) != 0:
+      raise Exception(f"Ошибка! Несоответствие формата данных в строках: {numb_of_err_strs}")
+  except Exception as e:
+    print(str(e))
+    exit()
+  
+    
 if __name__ == "__main__":
   contacts_list = input_data("phonebook_raw.csv")
-  print(pandas.read_csv(os.getcwd()+"\phonebook_raw.csv"))
+  # Добавлена процедура тестирования файла на соответствие заданному формату данных,
+  # в случае обнаружения несоответствия - выводятся номера строк, которые оператор
+  # должен самостоятельно проанализировать, т.к. нарушения могут быть различными
+  testing_data_for_correct(contacts_list)
+  print(pandas.read_csv(os.path.join(os.getcwd(),"phonebook_raw.csv")))
   save_data_to_file(parsing_data(contacts_list), "phonebook.csv")
   print('After program worked')
-  print(pandas.read_csv(os.getcwd()+"\phonebook.csv"))
+  print(pandas.read_csv(os.path.join(os.getcwd(),"phonebook.csv")))
 
 
 
